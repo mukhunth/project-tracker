@@ -28,19 +28,18 @@ router.get('/task/:taskId', async (req, res) => {
 router.get('/notifications', async (req, res) => {
   try {
     const username = req.user.username;
-    const mentionPattern = `%@${username}%`;
-
+    const mentionRegex = `(^|[^a-zA-Z0-9_])@${username}([^a-zA-Z0-9_]|$)`;
     const logs = await pool.query(
       `SELECT a.*, u.username as actor_name, t.title as task_title, p.name as project_name, p.id as project_id 
        FROM activity_logs a 
        JOIN users u ON a.user_id = u.id 
        JOIN tasks t ON a.task_id = t.id 
        JOIN projects p ON t.project_id = p.id 
-       WHERE (a.action_type = 'COMMENT' AND a.content->>'text' ILIKE $1) 
+       WHERE (a.action_type = 'COMMENT' AND a.content->>'text' ~* $1) 
           OR (a.action_type = 'CREATION' AND a.content->>'assignee' = $2) 
           OR (a.action_type = 'UPDATE' AND a.content->>'field_changed' = 'assignee' AND a.content->>'new_value' = $2) 
        ORDER BY a.created_at DESC`,
-      [mentionPattern, username]
+      [mentionRegex, username]
     );
     res.json(logs.rows);
   } catch (error) {
