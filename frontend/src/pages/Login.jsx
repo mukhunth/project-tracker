@@ -21,6 +21,7 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-surface-muted">
+      <div class="flex flex-col w-full max-w-md gap-6">
       <div className="w-full max-w-md p-8 bg-surface border border-surface-border rounded-xl shadow-sm">
         <h2 className="mb-6 text-2xl font-bold text-center text-foreground">Log in to Project Tracker</h2>
         
@@ -61,6 +62,13 @@ export default function Login() {
           </Link>
         </p>
       </div>
+      {/* Demo credentials */}
+        <div className="self-center p-4 text-sm border rounded-lg bg-surface-muted border-brand text-foreground-muted">
+          <p className="text-center mb-1 text-foreground">Demo Access</p>
+          <p>Email: <span className="text-brand"><i>demo@example.com</i></span></p>
+          <p>Password: <span className="text-brand"><i>demo123</i></span></p>
+        </div>
+        </div>
     </div>
   );
 }
