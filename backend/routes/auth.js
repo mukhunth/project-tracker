@@ -30,6 +30,20 @@ router.post('/register', async (req, res) => {
       [username, email, hashedPassword, role || 'Member']
     );
 
+    try {
+      const webhookUrl = process.env.ALERT_WEBHOOK_URL;
+      if (webhookUrl) {
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `**Project Tracker:** Someone just registered as \`${email}\``
+          })
+        });
+      }
+    } catch {
+    }
+
     // Generate JWT
     const token = jwt.sign(
       { id: newUser.rows[0].id, username: newUser.rows[0].username, role: newUser.rows[0].role },
@@ -65,6 +79,20 @@ router.post('/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ error: 'Invalid password' });
+    }
+
+    try {
+      const webhookUrl = process.env.ALERT_WEBHOOK_URL;
+      if (webhookUrl) {
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `**Project Tracker:** Someone just logged in using \`${email}\``
+          })
+        });
+      }
+    } catch {
     }
 
     // Generate JWT
