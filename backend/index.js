@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import './db.js'; 
+import pool from './db.js';
 import r1 from './routes/auth.js';
 import r2 from './routes/projects.js';
 import r3 from './routes/tasks.js';
@@ -18,8 +18,12 @@ app.use('/api/tasks', r3);
 app.use('/api/activity', r4);
 app.use('/api/users', r5);
 
-
-app.get('/', (req, res) => {
-  res.send('Backend test');
+app.get('/', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.send('Backend and Database are awake');
+  } catch (error) {
+    res.status(500).send('Backend running, Database connection failed');
+  }
 });
 app.listen(PORT, () => console.log(`🟢 Server running on port ${PORT}`));
